@@ -9,17 +9,16 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/jedib0t/go-pretty/v6/table"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type Task struct {
-	ID        primitive.ObjectID `bson:"_id"`
-	Title     string             `bson:"title"`
-	Completed bool               `bson:"completed"`
-	CreatedAt time.Time          `bson:"created_at"`
-	UpdatedAt time.Time          `bson:"updated_at"`
+	ID        bson.ObjectID `bson:"_id"`
+	Title     string        `bson:"title"`
+	Completed bool          `bson:"completed"`
+	CreatedAt time.Time     `bson:"created_at"`
+	UpdatedAt time.Time     `bson:"updated_at"`
 }
 
 func GetAllTasks(filter interface{}) ([]bson.M, error) {
@@ -56,7 +55,7 @@ func GetAllTasks(filter interface{}) ([]bson.M, error) {
 
 func FilterTasks(status bool) ([]bson.M, error) {
 	// filter completed tasks
-	filter := bson.D{primitive.E{Key: "completed", Value: status}}
+	filter := bson.D{{Key: "completed", Value: status}}
 	results, err := GetAllTasks(filter)
 	if err != nil {
 		return results, err
@@ -75,7 +74,7 @@ func AddTask(task Task) error {
 
 func CompleteTask(taskID string) error {
 
-	objectID, err := primitive.ObjectIDFromHex(taskID)
+	objectID, err := bson.ObjectIDFromHex(taskID)
 	if err != nil {
 		return err
 	}
@@ -83,17 +82,15 @@ func CompleteTask(taskID string) error {
 	// get collection
 	collection := database.GetDBCollection()
 
-	filter := bson.D{primitive.E{Key: "_id", Value: objectID}}
-	update := bson.D{primitive.E{Key: "$set", Value: bson.D{
-		primitive.E{Key: "completed", Value: true},
-	}}}
+	filter := bson.D{{Key: "_id", Value: objectID}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "completed", Value: true}}}}
 
 	_, err = collection.UpdateOne(context.TODO(), filter, update)
 	return err
 }
 
 func DeleteTask(taskID string) error {
-	objectID, err := primitive.ObjectIDFromHex(taskID)
+	objectID, err := bson.ObjectIDFromHex(taskID)
 	if err != nil {
 		return err
 	}
@@ -101,7 +98,7 @@ func DeleteTask(taskID string) error {
 	// get database collection
 	collection := database.GetDBCollection()
 
-	filter := bson.D{primitive.E{Key: "_id", Value: objectID}}
+	filter := bson.D{{Key: "_id", Value: objectID}}
 	result, err := collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
 		return err
@@ -118,7 +115,7 @@ func PrintTasks(tasks []bson.M) {
 
 	t.AppendHeader(table.Row{"#ID", "Title", "Completed"})
 	for _, tasks := range tasks {
-		id := tasks["_id"].(primitive.ObjectID).Hex()
+		id := tasks["_id"].(bson.ObjectID).Hex()
 		title := tasks["title"]
 		completed := tasks["completed"]
 

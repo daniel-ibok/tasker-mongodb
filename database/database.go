@@ -1,13 +1,12 @@
 package database
 
 import (
-	"context"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type Config struct {
@@ -38,7 +37,7 @@ func GetDBCollection() *mongo.Collection {
 }
 
 func NewDBInstance() error {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(config.MongoDBURI))
+	client, err := mongo.Connect(options.Client().ApplyURI(config.MongoDBURI))
 	if err != nil {
 		log.Fatal(err)
 	}

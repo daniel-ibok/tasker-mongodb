@@ -9,8 +9,8 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/urfave/cli/v2"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 var taskApp *cli.App
@@ -29,8 +29,12 @@ func TaskCLI() {
 				Action: func(ctx *cli.Context) error {
 					fmt.Println("List all tasks...")
 					tasks, err := model.GetAllTasks(bson.D{{}})
-					if err != nil {
+					if err != nil && err != mongo.ErrNoDocuments {
 						log.Fatal(err)
+					}
+
+					if tasks == nil {
+						tasks = []bson.M{}
 					}
 
 					model.PrintTasks(tasks)
@@ -75,7 +79,7 @@ func TaskCLI() {
 					// retrieve task from cli
 					title := ctx.Args().First()
 					task := model.Task{
-						ID:        primitive.NewObjectID(),
+						ID:        bson.NewObjectID(),
 						Title:     title,
 						Completed: false,
 						CreatedAt: time.Now(),
