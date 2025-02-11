@@ -2,9 +2,9 @@ package cli
 
 import (
 	"fmt"
-	"go-mongodb/model"
 	"log"
 	"os"
+	"task-manager/model"
 	"time"
 
 	"github.com/gookit/color"

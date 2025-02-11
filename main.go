@@ -1,9 +1,9 @@
 package main
 
 import (
-	"go-mongodb/cli"
-	"go-mongodb/database"
 	"log"
+	"task-manager/cli"
+	"task-manager/database"
 )
 
 func main() {
